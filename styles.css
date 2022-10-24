@@ -1,0 +1,267 @@
+:root {
+  --fallback-title-bar-height: 40px;
+}
+
+html {
+  background-color: #282828;
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+  overflow-y: hidden;
+}
+
+#streamer-name {
+  right: 0;
+  height: 50px;
+  font-size: 50px;
+  position: absolute;
+  z-index: 1;
+  background-color: #89855b;
+  color: black;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  box-shadow: inset 0px 1px 1px 0px #1a1a1a;
+}
+
+#sidebar {
+  flex-grow: 1;
+  height: calc(100vh - var(--fallback-title-bar-height));
+  overflow-y: auto;
+}
+
+#player.default-player {
+  flex-grow: 10;
+  position: relative;
+  height: calc(100vh - var(--fallback-title-bar-height));
+}
+
+.container.theater-mode > #player.default-player {
+  margin: 0;
+}
+
+.container.theater-mode > #player.default-player > #vjs-player > video {
+  box-shadow: none;
+}
+
+video {
+  box-shadow: 0 0 15px 0px rgba(0, 0, 0, 0.75);
+  clip-path: inset(0px -15px 0px -15px);
+}
+
+#chat {
+  flex-grow: 1;
+  width: 400px;
+  height: calc(100vh - var(--fallback-title-bar-height));
+  max-width: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  font-family: Inter, Roobert, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#vjs-player,
+video,
+#player {
+  /* border-radius: 8px; */
+}
+
+#vjs-player {
+  width: 100%;
+  height: 100%;
+}
+
+.container.theater-mode > #player > #vjs-player {
+  height: calc(100vh - var(--fallback-title-bar-height));
+}
+
+.vjs-control-bar {
+  /* border-bottom-left-radius: 8px; */
+  /* border-bottom-right-radius: 8px; */
+}
+
+.vjs-user-active > .vjs-text-track-display {
+  box-shadow: inset 0px 0px 20px 8px black;
+  /* clip-path: inset(100%); */
+  /* border-top-left-radius: 8px; */
+  /* border-top-right-radius: 8px; */
+}
+
+.vjs-fullscreen > .vjs-text-track-display {
+  height: 100%;
+}
+
+.vjs-fullscreen.vjs-user-active > .vjs-text-track-display {
+  box-shadow: inset 0px 0px 20px 8px black,
+    inset 0 -40px 10px -10px rgb(0 0 0 / 32%);
+}
+
+#compressor-msg {
+  position: absolute;
+  height: 0 !important;
+  top: 30px;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  color: white;
+  font-size: 10rem;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#compressor-msg.animate {
+  animation: fadeOut 1s;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.message {
+  padding: 0.5rem;
+}
+
+.message > .user {
+  font-weight: bold;
+}
+.message > .text {
+  color: white;
+  word-wrap: break-word;
+}
+
+.followed-channel {
+  color: white;
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 6px;
+  user-select: none;
+}
+
+.followed-channel:hover {
+  box-shadow: inset 0 0 6px 0px grey;
+  background-color: rgb(62, 62, 62, 0.2);
+  cursor: pointer;
+}
+
+.followed-channel > .fc-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9000px;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.game-name {
+  font-size: 0.8rem;
+}
+
+.viewer-count {
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+/* title bar */
+
+#titleBarContainer {
+  top: env(titlebar-area-y, 0);
+  height: env(titlebar-area-height, var(--fallback-title-bar-height));
+  width: 100%;
+  background-color: #3e3e3e;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.channel-name {
+  filter: drop-shadow(0px 0px 5px black);
+}
+
+#titleBar {
+  top: 0;
+  display: flex;
+  user-select: none;
+  height: 100%;
+  left: env(titlebar-area-x, 0);
+  width: env(titlebar-area-width, 100%);
+
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+}
+
+#titleBar > span {
+  margin: auto;
+  padding: 0px 16px 0px 16px;
+}
+
+#titleBar.focused {
+  background-color: #9763e9;
+}
+
+.draggable {
+  app-region: drag;
+  /* Pre-fix app-region during standardization process */
+  -webkit-app-region: drag;
+}
+
+.nonDraggable {
+  app-region: no-drag;
+  /* Pre-fix app-region during standardization process */
+  -webkit-app-region: no-drag;
+}
+
+/* scroll bar */
+
+/* width */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #282828;
+  box-shadow: inset 0px 0px 10px 0px #1a1a1a;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+#chat::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  transform: scale(2);
+}
+
+/* audio */
+#audio-btn {
+  position: absolute;
+  bottom: 0;
+  left: 200px;
+  height: 50px;
+  width: 100px;
+}

@@ -1,0 +1,85 @@
+/* Show the controls (hidden at the start by default) */
+.video-js .vjs-control-bar {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  /* opacity: 1 !important; */
+}
+
+/* center big play button */
+.vjs-skin .vjs-big-play-button {
+  left: 50%;
+  top: 50%;
+  margin-left: -(3em / 2);
+  margin-top: -(1.5em / 2);
+}
+
+/* Change all text and icon colors in the player. */
+.vjs-skin.video-js {
+  /* color: #9763e9; */
+}
+
+/* make controls background opaque */
+.video-js .vjs-control-bar,
+.video-js .vjs-big-play-button,
+.video-js .vjs-menu-button .vjs-menu-content {
+  background-color: rgba(43, 51, 63, 0);
+}
+
+.vjs-live-control.vjs-control {
+  font-weight: 1000;
+  /* display: block; */
+}
+
+.vjs-control-bar {
+  font-size: 151%;
+}
+
+/* compressor button */
+.vjs-comp {
+  box-sizing: border-box;
+  border: 1px solid blue;
+  margin: 1em auto;
+  position: relative;
+  cursor: pointer;
+}
+
+.vjs-comp.compressed {
+  clip-path: polygon(
+    0 0,
+    16% 32%,
+    45% 31%,
+    59% 1%,
+    55% 100%,
+    43% 71%,
+    13% 71%,
+    0 100%
+  );
+}
+
+.vjs-comp::before {
+  content: "";
+  position: absolute;
+  top: 11px;
+  left: 4px;
+  width: 12px !important;
+  height: 50% !important;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  border-left: 4px solid white;
+  border-right: 4px solid white;
+}
+
+.vjs-comp::after {
+  content: "";
+  position: absolute;
+  top: 11px;
+  left: 20px;
+  width: 12px !important;
+  height: 50% !important;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  border-left: 4px solid white;
+  border-right: 4px solid white;
+}
