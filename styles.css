@@ -100,7 +100,7 @@ video,
     inset 0 -40px 10px -10px rgb(0 0 0 / 32%);
 }
 
-#compressor-msg {
+#compressor-msg, #player-overlay {
   position: absolute;
   height: 0 !important;
   top: 30px;
@@ -117,6 +117,18 @@ video,
 
 #compressor-msg.animate {
   animation: fadeOut 1s;
+}
+
+div#player-overlay {
+  font-size: 1rem;
+  right: 1rem;
+  text-align: right;
+  left: auto;
+  font-weight: 600;
+}
+
+.vjs-user-active + #player-overlay {
+  opacity: 1 !important;
 }
 
 @keyframes fadeOut {

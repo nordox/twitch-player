@@ -16,6 +16,7 @@ const vjs = videojs("vjs-player");
 const formatter = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 const compBtn = vjs.controlBar.addChild('button', { controlText: "compressor", className: "vjs-comp" });
 const compBtnDom = compBtn.el();
+const overlay = $("#player-overlay");
 const compMsg = $("#compressor-msg");
 const embedUrl = "https://www.twitch.tv/embed/{}/chat?darkpopout&parent=127.0.0.1";
 const MAX_CHAT_HISTORY = 100;
@@ -55,7 +56,7 @@ vjs.on('waiting', (event) => {
     (new Promise(resolve => setTimeout(resolve, 5000))).then(() => {
         if (loading) {
             console.log("restarting player");
-            window.electronAPI.getStreamData(nameInput.val().toLowerCase()).then((data) => {
+            window.electronAPI.getStreamUrls(nameInput.val().toLowerCase()).then((data) => {
                 const url = `http://localhost:8000/test.m3u8?url=${data[0].url}`;
                 vjs.src(url);
                 vjs.play();
@@ -242,7 +243,7 @@ window.addEventListener('keydown', function (event) {
 async function playStream() {
     try {
         const name = nameInput.val();
-        const data = await window.electronAPI.getStreamData(name.toLowerCase());
+        const data = await window.electronAPI.getStreamUrls(name.toLowerCase());
         const url = `http://localhost:8001/test.m3u8?url=${data[0].url}`;
 
         vjs.src(url);
@@ -250,41 +251,40 @@ async function playStream() {
 
         $("#twitch-chat-embed").attr("src", embedUrl.replace("{}", name.toLowerCase()));
 
-        if (url) {
-            nameInput.blur();
-            nameInput.hide();
-            player.focus();
-            clearChatBox();
+        nameInput.blur();
+        nameInput.hide();
+        player.focus();
+        clearChatBox();
 
-            // get bttv & ffz emotes
-            const channelInfo = await window.electronAPI.getChannelInfo(name);
+        // get bttv & ffz emotes
+        const channelInfo = await window.electronAPI.getChannelInfo(name);
 
-            console.log("channel info", channelInfo);
-            currentChannel = channelInfo;
-            $(".channel-name").text(channelInfo.user_name);
+        console.log("channel info", channelInfo);
+        currentChannel = channelInfo;
+        $(".channel-name").text(channelInfo.user_name);
+        overlay.html(`${channelInfo.title}<br/>🔴 ${formatter.format(channelInfo.viewer_count)}`);
 
-            const bttvChannelUrl = "https://api.betterttv.net/3/cached/users/twitch/";
-            const bttvGlobalUrl = "https://api.betterttv.net/3/cached/emotes/global";
-            const ffzChannelUrl = "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/";
-            const ffzGlobalUrl = "https://api.betterttv.net/3/cached/frankerfacez/emotes/global";
-            const bttvChannelGet = axios.get(`${bttvChannelUrl}${channelInfo.user_id}`).catch(e => []);
-            const bttvGlobalGet = axios.get(bttvGlobalUrl);
-            const ffzChannelGet = axios.get(`${ffzChannelUrl}${channelInfo.user_id}`);
-            const ffzGlobalGet = axios.get(ffzGlobalUrl);
+        const bttvChannelUrl = "https://api.betterttv.net/3/cached/users/twitch/";
+        const bttvGlobalUrl = "https://api.betterttv.net/3/cached/emotes/global";
+        const ffzChannelUrl = "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/";
+        const ffzGlobalUrl = "https://api.betterttv.net/3/cached/frankerfacez/emotes/global";
+        const bttvChannelGet = axios.get(`${bttvChannelUrl}${channelInfo.user_id}`).catch(e => []);
+        const bttvGlobalGet = axios.get(bttvGlobalUrl);
+        const ffzChannelGet = axios.get(`${ffzChannelUrl}${channelInfo.user_id}`);
+        const ffzGlobalGet = axios.get(ffzGlobalUrl);
 
-            channelBadges = _.keyBy(channelInfo.badges.map(x => ({ ...x, versions: _.keyBy(x.versions, "id") })), "set_id");
-            channelEmotes = _.keyBy(channelInfo.emotes, "code");
+        channelBadges = _.keyBy(channelInfo.badges.map(x => ({ ...x, versions: _.keyBy(x.versions, "id") })), "set_id");
+        channelEmotes = _.keyBy(channelInfo.emotes, "code");
 
-            Promise.all([bttvChannelGet, bttvGlobalGet, ffzChannelGet, ffzGlobalGet]).then((response) => {
-                bttvSharedEmotes = _.keyBy(response[0]?.data?.sharedEmotes, "code");
-                bttvChannelEmotes = _.keyBy(response[0]?.data?.channelEmotes, "code");
-                bttvGlobalEmotes = _.keyBy(response[1]?.data, "code");
-                ffzChannelEmotes = _.keyBy(response[2]?.data, "code");
-                ffzGlobalEmotes = _.keyBy(response[3]?.data, "code");
-                // TODO: merge overwriting keys
-                emotes = _.merge(bttvChannelEmotes, bttvSharedEmotes, bttvGlobalEmotes, ffzChannelEmotes, ffzGlobalEmotes, channelEmotes);
-            });
-        }
+        Promise.all([bttvChannelGet, bttvGlobalGet, ffzChannelGet, ffzGlobalGet]).then((response) => {
+            bttvSharedEmotes = _.keyBy(response[0]?.data?.sharedEmotes, "code");
+            bttvChannelEmotes = _.keyBy(response[0]?.data?.channelEmotes, "code");
+            bttvGlobalEmotes = _.keyBy(response[1]?.data, "code");
+            ffzChannelEmotes = _.keyBy(response[2]?.data, "code");
+            ffzGlobalEmotes = _.keyBy(response[3]?.data, "code");
+            // TODO: merge overwriting keys
+            emotes = _.merge(bttvChannelEmotes, bttvSharedEmotes, bttvGlobalEmotes, ffzChannelEmotes, ffzGlobalEmotes, channelEmotes);
+        });
     } catch (e) {
         console.error("error getting stream", e);
     }

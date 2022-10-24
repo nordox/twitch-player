@@ -27,7 +27,7 @@ async function getChannelInfo(name) {
 }
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getStreamData: (name) => ipcRenderer.invoke('channel-setup', name),
+  getStreamUrls: (name) => ipcRenderer.invoke('channel-setup', name),
   getChannelInfo: (name) => getChannelInfo(name),
   getFollowedChannels: () => ipcRenderer.invoke('channels'),
   handleChatMessage: (callback) => ipcRenderer.on('chat-msg', callback),
