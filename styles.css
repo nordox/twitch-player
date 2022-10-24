@@ -85,7 +85,10 @@ video,
 }
 
 .vjs-user-active > .vjs-text-track-display {
-  box-shadow: inset 0px 0px 20px 8px black;
+  box-shadow: inset 0px 0px 20px 8px black,
+    inset 0 -40px 10px -10px rgb(0 0 0 / 32%);
+  height: 100%;
+  /* box-shadow: inset 0px 0px 20px 8px black; */
   /* clip-path: inset(100%); */
   /* border-top-left-radius: 8px; */
   /* border-top-right-radius: 8px; */
@@ -100,7 +103,8 @@ video,
     inset 0 -40px 10px -10px rgb(0 0 0 / 32%);
 }
 
-#compressor-msg, #player-overlay {
+#compressor-msg,
+#player-overlay {
   position: absolute;
   height: 0 !important;
   top: 30px;
@@ -125,6 +129,7 @@ div#player-overlay {
   text-align: right;
   left: auto;
   font-weight: 600;
+  filter: drop-shadow(0px 0px 10px black);
 }
 
 .vjs-user-active + #player-overlay {
