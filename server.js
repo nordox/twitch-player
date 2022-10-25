@@ -1,12 +1,5 @@
 
 const axios = require('axios');
-const fs = require('fs');
-const static = require('node-static');
-const file = new static.Server(`${__dirname}/m3u8`);
-
-// fs.readdirSync(`${__dirname}/m3u8`).map(filename => {
-//     console.log("file:", filename);
-// });
 
 require('http').createServer(function (request, response) {
     request.addListener('end', async function () {
@@ -20,9 +13,6 @@ require('http').createServer(function (request, response) {
 
         response.setHeader('Cache-Control', 'no-cache');
         response.setHeader('Pragma', 'no-cache');
-
-        fs.writeFile(`${__dirname}/m3u8/test.m3u8`, lines.join("\n"), () => {
-            file.serve(request, response);
-        });
+        response.end(lines.join("\n"));
     }).resume();
 }).listen(8001)
