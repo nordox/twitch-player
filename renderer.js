@@ -57,7 +57,7 @@ vjs.on('waiting', (event) => {
         if (loading) {
             console.log("restarting player");
             window.electronAPI.getStreamUrls(nameInput.val().toLowerCase()).then((data) => {
-                const url = `http://localhost:8000/test.m3u8?url=${data[0].url}`;
+                const url = `http://localhost:8001/test.m3u8?url=${data[0].url}`;
                 vjs.src(url);
                 vjs.play();
             });
