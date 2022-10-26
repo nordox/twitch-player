@@ -179,7 +179,6 @@ window.addEventListener('blur', function () {
 });
 
 window.addEventListener('keydown', function (event) {
-    console.log(videojs("vjs-player").currentSrc());
     if (vjs.currentSrc() && event.altKey && event.keyCode === 84) {
         if (container.hasClass("theater-mode")) {
             container.removeClass("theater-mode");
@@ -273,7 +272,16 @@ async function playStream() {
         const ffzChannelGet = axios.get(`${ffzChannelUrl}${channelInfo.user_id}`);
         const ffzGlobalGet = axios.get(ffzGlobalUrl);
 
-        channelBadges = _.keyBy(channelInfo.badges.map(x => ({ ...x, versions: _.keyBy(x.versions, "id") })), "set_id");
+        let groupedBadges = _.groupBy(channelInfo.badges, "set_id");
+
+        for (let key in groupedBadges) {
+            groupedBadges[key] = {
+                set_id: groupedBadges[key][0].set_id,
+                versions: groupedBadges[key].length > 1 ? mergeVersions(groupedBadges[key].map(x => x.versions)) : _.keyBy(groupedBadges[key][0].versions, "id")
+            };
+        }
+        channelBadges = groupedBadges;
+
         channelEmotes = _.keyBy(channelInfo.emotes, "code");
 
         Promise.all([bttvChannelGet, bttvGlobalGet, ffzChannelGet, ffzGlobalGet]).then((response) => {
@@ -282,7 +290,6 @@ async function playStream() {
             bttvGlobalEmotes = _.keyBy(response[1]?.data, "code");
             ffzChannelEmotes = _.keyBy(response[2]?.data, "code");
             ffzGlobalEmotes = _.keyBy(response[3]?.data, "code");
-            // TODO: merge overwriting keys
             emotes = _.merge(bttvChannelEmotes, bttvSharedEmotes, bttvGlobalEmotes, ffzChannelEmotes, ffzGlobalEmotes, channelEmotes);
         });
     } catch (e) {
@@ -317,6 +324,15 @@ async function setupSidebar() {
         nameInput.trigger({ type: "keypress", keyCode: 13 });
     });
     return;
+}
+
+
+function mergeVersions(objects = []) {
+    let final = {};
+    objects.flat().forEach((version) => {
+        final[version.id] = version;
+    });
+    return final;
 }
 
 function focusInput(element) {
