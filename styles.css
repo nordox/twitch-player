@@ -160,6 +160,10 @@ div#player-overlay {
   word-wrap: break-word;
 }
 
+.chat-link:link {
+  color: #6f6fc1;
+}
+
 .followed-channel {
   color: white;
   padding: 1rem;

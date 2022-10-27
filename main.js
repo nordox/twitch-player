@@ -174,6 +174,10 @@ function setupListeners() {
   ipcMain.handle('change-color', async function (event, color) {
     mainWindow.setTitleBarOverlay({ color: color });
   });
+
+  ipcMain.handle('open-link', function (event, link) {
+    require('electron').shell.openExternal(link);
+  });
 }
 
 function disConnectFromExistingChat() {

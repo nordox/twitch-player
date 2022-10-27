@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 });
 
-const { contextBridge, ipcRenderer, net } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 async function getChannelInfo(name) {
   const channelInfo = await ipcRenderer.invoke('channel-info', name);
@@ -33,4 +33,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   handleChatMessage: (callback) => ipcRenderer.on('chat-msg', callback),
   disconnectFromAllChats: () => ipcRenderer.invoke('disconnect-chat'),
   changeColor: (color) => ipcRenderer.invoke('change-color', color),
+  openLink: (link) => ipcRenderer.invoke('open-link', link),
 });

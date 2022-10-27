@@ -20,6 +20,7 @@ const overlay = $("#player-overlay");
 const compMsg = $("#compressor-msg");
 const embedUrl = "https://www.twitch.tv/embed/{}/chat?darkpopout&parent=127.0.0.1";
 const MAX_CHAT_HISTORY = 100;
+const URL_REGEX = /(([a-z]{3,6}:\/\/)|(^|\s))([a-zA-Z0-9\-]+\.)+[a-z]{2,13}[\.\?\=\&\%\/\w\-]*\b([^@]|$)/gi;
 
 // custom skin
 player.addClass('vjs-skin');
@@ -340,10 +341,17 @@ function focusInput(element) {
     element.get(0).select();
 }
 
+function openLink(link) {
+    console.log("got link", link);
+    window.electronAPI.openLink(link);
+}
+
 function addChatMessage(user, text, color, isBroadcaster, isModerator, badges, parsed) {
     let combined = parsed.map(m => {
         if (m.type === "text") {
-            return m.text;
+            return m.text.replaceAll(URL_REGEX, function (match) {
+                return `<a class="chat-link" onclick="openLink('${match.trim()}')" href="javascript:void(0)">${match}</a>`;
+            });
         }
         const img = `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${m.id}/default/dark/1.0" title="${m.name}" />`;
         return img;
