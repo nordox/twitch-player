@@ -15,7 +15,10 @@ const player = $("#vjs-player");
 const vjs = videojs("vjs-player");
 const formatter = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 const compBtn = vjs.controlBar.addChild('button', { controlText: "compressor", className: "vjs-comp" });
+const recognizeSongBtn = vjs.controlBar.addChild('button', { controlText: "recognize song", className: "vjs-rsb" });
 const compBtnDom = compBtn.el();
+const recognizeSongBtnDom = recognizeSongBtn.el();
+const draggable = $("#draggable");
 const overlay = $("#player-overlay");
 const compMsg = $("#compressor-msg");
 const embedUrl = "https://www.twitch.tv/embed/{}/chat?darkpopout&parent=127.0.0.1";
@@ -74,6 +77,32 @@ player.on('keydown', (event) => {
     }
 });
 
+async function recognizeSong() {
+    let preview = document.getElementById("vjs-player_html5_api");
+    let song;
+
+    await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: true,
+        preferCurrentTab: true
+    })
+    try {
+        const recordedChunks = await startRecording(preview.captureStream(), 10000);
+        let recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
+        // const url = URL.createObjectURL(recordedBlob);
+        const x = await recordedBlob.arrayBuffer();
+        song = await window.electronAPI.recognize(x);
+        console.log("got song", song);
+        console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
+    } catch (error) {
+        if (error.name === "NotFoundError") {
+            console.log("Can't record.");
+        } else {
+            console.log(error);
+        }
+    }
+    return song;
+}
 
 const updateCompressor = (event) => {
     // off: src -> destination
@@ -136,6 +165,30 @@ const updateCompressor = (event) => {
 }
 
 compBtnDom.onclick = updateCompressor;
+
+recognizeSongBtnDom.onclick = async () => {
+    if (recognizeSongBtn.hasClass("searching")) {
+        return;
+    }
+    recognizeSongBtn.addClass("searching");
+    const song = await recognizeSong();
+    if (song?.result) {
+        const rect = recognizeSongBtnDom.getBoundingClientRect();
+        draggable.find("#artist-name").text(song.result.artist);
+        draggable.find("#song-title").text(song.result.title);
+        if (song.result.spotify) {
+            draggable.find("#album-cover").css({
+                background: `url(${song.result.spotify.album.images.find(x => x.width === 64)?.url})`
+            });
+        }
+        draggable.css({
+            visibility: "visible",
+            left: rect.right - draggable.width(),
+            top: rect.top - draggable.height()
+        });
+    }
+    recognizeSongBtn.removeClass("searching");
+};
 
 window.addEventListener('DOMContentLoaded', async () => {
     const _player = videojs('vjs-player');

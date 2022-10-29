@@ -87,7 +87,7 @@ function createWindow() {
   mainWindow.loadFile('index.html');
 
   // Open the DevTools.
-  // openDevTools(mainWindow);
+  openDevTools(mainWindow);
 
 
   // ./api file causing devtools to not open right away
@@ -178,6 +178,31 @@ function setupListeners() {
   ipcMain.handle('open-link', function (event, link) {
     require('electron').shell.openExternal(link);
   });
+
+  ipcMain.handle('recognize', async function (event, file) {
+    return await recognizeSong(file);
+  });
+}
+
+async function recognizeSong(p) {
+  const fp = `${__dirname}/m3u8/song.mp3`;
+  await fs.promises.writeFile(fp, Buffer.from(p));
+  const data = {
+    'api_token': process.env.AUDD_TOKEN,
+    'return': 'apple_music,spotify,deezer',
+    'file': fs.createReadStream(fp)
+  };
+  try {
+    const response = await require("axios")({
+      method: 'post',
+      url: 'https://api.audd.io/',
+      data: data,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    console.log("audd error", error);
+  }
 }
 
 function disConnectFromExistingChat() {
