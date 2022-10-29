@@ -403,7 +403,11 @@ function addChatMessage(user, text, color, isBroadcaster, isModerator, badges, p
     let combined = parsed.map(m => {
         if (m.type === "text") {
             return m.text.replaceAll(URL_REGEX, function (match) {
-                return `<a class="chat-link" onclick="openLink('${match.trim()}')" href="javascript:void(0)">${match}</a>`;
+                let _match = match.trim();
+                if (!_match.startsWith("http")) {
+                    _match = "https://" + _match;
+                }
+                return `<a class="chat-link" onclick="openLink('${_match}')" href="javascript:void(0)">${match}</a>`;
             });
         }
         const img = `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${m.id}/default/dark/1.0" title="${m.name}" />`;
