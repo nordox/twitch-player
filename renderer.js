@@ -192,6 +192,10 @@ recognizeSongBtnDom.onclick = async () => {
     recognizeSongBtn.removeClass("searching");
 };
 
+$("#x").on('click', () => {
+    draggable.css({ visibility: "hidden" });
+})
+
 window.addEventListener('DOMContentLoaded', async () => {
     const _player = videojs('vjs-player');
 

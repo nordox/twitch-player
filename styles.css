@@ -1,5 +1,6 @@
 :root {
   --fallback-title-bar-height: 40px;
+  --draggable-border-radius: 8px;
 }
 
 html {
@@ -296,7 +297,7 @@ div#player-overlay {
   /* z-index: 9; */
   color: white;
   border: 1px solid black;
-  border-radius: 10px;
+  border-radius: var(--draggable-border-radius);
   background: #4c5844;
   text-align: center;
   min-height: 64px;
@@ -308,13 +309,12 @@ div#player-overlay {
   font-family: Arial, Helvetica, sans-serif;
   box-shadow: inset 0px 0px 20px 8px #373c33;
   visibility: hidden;
-
 }
 #album-cover {
   min-width: 64px;
   background-repeat: no-repeat !important;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+  border-top-left-radius: var(--draggable-border-radius);
+  border-bottom-left-radius: var(--draggable-border-radius);
 }
 
 #song-title {
@@ -332,4 +332,18 @@ div#player-overlay {
   flex-direction: column;
   padding: 0.3rem;
   text-align: start;
+}
+
+#x {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+}
+
+#x:hover {
+  cursor: pointer;
+  border-top-right-radius: var(--draggable-border-radius);
+  background-color: #ffffff2e;
 }
