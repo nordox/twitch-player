@@ -34,6 +34,8 @@ let bttvChannelEmotes;
 let bttvGlobalEmotes;
 let ffzChannelEmotes;
 let ffzGlobalEmotes;
+let _7tvChannelEmotes;
+let _7tvGlobalEmotes;
 let emotesCache = {};
 let sharedEmotesCache = {};
 let channelEmotesCache = {};
@@ -321,10 +323,14 @@ async function playStream() {
         const bttvGlobalUrl = "https://api.betterttv.net/3/cached/emotes/global";
         const ffzChannelUrl = "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/";
         const ffzGlobalUrl = "https://api.betterttv.net/3/cached/frankerfacez/emotes/global";
+        const _7tvChannelUrl = "https://api.7tv.app/v2/users/{}/emotes";
+        const _7tvGlobalUrl = "https://api.7tv.app/v2/emotes/global";
         const bttvChannelGet = axios.get(`${bttvChannelUrl}${channelInfo.user_id}`).catch(e => []);
         const bttvGlobalGet = axios.get(bttvGlobalUrl);
         const ffzChannelGet = axios.get(`${ffzChannelUrl}${channelInfo.user_id}`);
         const ffzGlobalGet = axios.get(ffzGlobalUrl);
+        const _7tvChannelGet = axios.get(_7tvChannelUrl.replace("{}", channelInfo.user_id));
+        const _7tvGlobalGet = axios.get(_7tvGlobalUrl);
 
         let groupedBadges = _.groupBy(channelInfo.badges, "set_id");
 
@@ -338,13 +344,15 @@ async function playStream() {
 
         channelEmotes = _.keyBy(channelInfo.emotes, "code");
 
-        Promise.all([bttvChannelGet, bttvGlobalGet, ffzChannelGet, ffzGlobalGet]).then((response) => {
+        Promise.all([bttvChannelGet, bttvGlobalGet, ffzChannelGet, ffzGlobalGet, _7tvChannelGet, _7tvGlobalGet]).then((response) => {
             bttvSharedEmotes = _.keyBy(response[0]?.data?.sharedEmotes, "code");
             bttvChannelEmotes = _.keyBy(response[0]?.data?.channelEmotes, "code");
             bttvGlobalEmotes = _.keyBy(response[1]?.data, "code");
             ffzChannelEmotes = _.keyBy(response[2]?.data, "code");
             ffzGlobalEmotes = _.keyBy(response[3]?.data, "code");
-            emotes = _.merge(bttvChannelEmotes, bttvSharedEmotes, bttvGlobalEmotes, ffzChannelEmotes, ffzGlobalEmotes, channelEmotes);
+            _7tvChannelEmotes = _.keyBy(response[4]?.data, "name");
+            _7tvGlobalEmotes = _.keyBy(response[5]?.data, "name");
+            emotes = _.merge(bttvChannelEmotes, bttvSharedEmotes, bttvGlobalEmotes, ffzChannelEmotes, ffzGlobalEmotes, _7tvGlobalEmotes, _7tvChannelEmotes, channelEmotes);
         });
     } catch (e) {
         console.error("error getting stream", e);
@@ -427,6 +435,8 @@ function addChatMessage(user, text, color, isBroadcaster, isModerator, badges, p
                     emoteSrc = emote.images["1x"] || emote.images["url_1x"];
                 }
                 word = `<img src="${emoteSrc}" title="${emote.code}" />`;
+            } else if (emote.urls) {
+                word = `<img src="https://cdn.7tv.app/emote/${emote.id}/1x.webp" title="${emote.name}" />`;
             } else {
                 word = `<img src="https://cdn.betterttv.net/emote/${emotesCache[word].id}/1x" title="${emote.code}" />`;
             }
