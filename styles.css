@@ -347,3 +347,18 @@ div#player-overlay {
   border-top-right-radius: var(--draggable-border-radius);
   background-color: #ffffff2e;
 }
+
+#spotify-open-btn {
+  margin-top: 0.5rem;
+  width: fit-content;
+  border: 1px solid black;
+  background: green;
+  border-radius: 10px;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: black;
+}
+
+#spotify-open-btn:hover {
+    box-shadow: 1px 2px 0px 0px black;
+}

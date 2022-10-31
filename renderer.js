@@ -19,6 +19,7 @@ const recognizeSongBtn = vjs.controlBar.addChild('button', { controlText: "recog
 const compBtnDom = compBtn.el();
 const recognizeSongBtnDom = recognizeSongBtn.el();
 const draggable = $("#draggable");
+const openSpotifyBtn = $("#spotify-open-btn");
 const overlay = $("#player-overlay");
 const compMsg = $("#compressor-msg");
 const embedUrl = "https://www.twitch.tv/embed/{}/chat?darkpopout&parent=127.0.0.1";
@@ -182,6 +183,10 @@ recognizeSongBtnDom.onclick = async () => {
             draggable.find("#album-cover").css({
                 background: `url(${song.result.spotify.album.images.find(x => x.width === 64)?.url})`
             });
+            openSpotifyBtn.css({ display: "visible" });
+            openSpotifyBtn.attr("href", song.result.spotify.uri);
+        } else {
+            openSpotifyBtn.css({ display: "none" });
         }
         draggable.css({
             visibility: "visible",
