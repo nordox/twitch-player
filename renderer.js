@@ -339,7 +339,7 @@ async function playStream() {
         const bttvGlobalGet = axios.get(bttvGlobalUrl);
         const ffzChannelGet = axios.get(`${ffzChannelUrl}${channelInfo.user_id}`);
         const ffzGlobalGet = axios.get(ffzGlobalUrl);
-        const _7tvChannelGet = axios.get(_7tvChannelUrl.replace("{}", channelInfo.user_id));
+        const _7tvChannelGet = axios.get(_7tvChannelUrl.replace("{}", channelInfo.user_id)).catch(e => []);
         const _7tvGlobalGet = axios.get(_7tvGlobalUrl);
 
         let groupedBadges = _.groupBy(channelInfo.badges, "set_id");
