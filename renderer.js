@@ -9,6 +9,7 @@
 const container = $(".container");
 const nameInput = $("#streamer-name");
 const chatBox = $("#chat");
+const chatMessages = $("#chat > #messages");
 const sideBar = $("#sidebar");
 const playerDiv = $("#player");
 const player = $("#vjs-player");
@@ -465,15 +466,15 @@ function addChatMessage(user, text, color, isBroadcaster, isModerator, badges, p
         }
     }
 
-    const children = chatBox.children();
+    const children = chatMessages.children();
     if (children.length > MAX_CHAT_HISTORY && (chatBox.scrollTop() === 0)) {
         // chat is scrolled to the bottom
         for (let i = 0; i < (children.length - MAX_CHAT_HISTORY); i++) {
-            chatBox.children().last().remove();
+            chatMessages.children().last().remove();
         }
     }
 
-    chatBox.prepend($('<div class="message">').html(`
+    chatMessages.prepend($('<div class="message">').html(`
         <span class="user" style="color:${color || "grey"}">
             ${badgeDisplay.join(' ')}
             <span>${user}</span>
@@ -495,5 +496,17 @@ function toggleOpacity(element) {
 }
 
 function clearChatBox() {
-    chatBox.empty();
+    chatMessages.empty();
+}
+
+function onChatSCroll() {
+    if (chatBox.scrollTop() === 0) {
+        $("#chat-scroll").css({ display: "none" });
+    } else {
+        $("#chat-scroll").css({ display: "block" });
+    }
+}
+
+function scrollChatToBottom() {
+    chatBox.scrollTop(0);
 }

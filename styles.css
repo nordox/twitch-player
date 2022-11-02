@@ -64,6 +64,10 @@ video {
   flex-direction: column-reverse;
   font-family: Inter, Roobert, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+#chat #messages {
+  display: flex;
+  flex-direction: column-reverse;
+}
 
 #vjs-player,
 video,
@@ -360,5 +364,21 @@ div#player-overlay {
 }
 
 #spotify-open-btn:hover {
-    box-shadow: 1px 2px 0px 0px black;
+  box-shadow: 1px 2px 0px 0px black;
+}
+
+#chat-scroll {
+  color: white;
+  display: none;
+  position: absolute;
+  align-self: center;
+  padding: 0.75rem 1rem 0.75rem 1rem;
+  border-radius: 6px;
+  background-color: #00000052;
+  margin-bottom: 1rem;
+}
+#chat-scroll:hover {
+  opacity: 0.8;
+  cursor: pointer;
+  user-select: none;
 }

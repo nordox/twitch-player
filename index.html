@@ -36,7 +36,9 @@
       </div>
       <!-- <iframe id="twitch-chat-embed" src="" width="350" frameborder="0">
       </iframe> -->
-      <div id="chat">
+      <div id="chat" onscroll="onChatSCroll()">
+        <div id="messages"></div>
+        <div id="chat-scroll" onclick="scrollChatToBottom()">scroll to bottom</div>
       </div>
     </div>
 
