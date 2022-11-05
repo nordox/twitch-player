@@ -34,5 +34,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   disconnectFromAllChats: () => ipcRenderer.invoke('disconnect-chat'),
   changeColor: (color) => ipcRenderer.invoke('change-color', color),
   openLink: (link) => ipcRenderer.invoke('open-link', link),
-  recognize: (file) => ipcRenderer.invoke("recognize", file)
+  recognize: (file) => ipcRenderer.invoke("recognize", file),
+  getSongHistory: () => ipcRenderer.invoke("song-history")
 });

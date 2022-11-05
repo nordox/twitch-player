@@ -53,6 +53,7 @@ let audioElement;
 let src;
 let loading;
 let manualPlay = false;
+let songHistory = [];
 
 vjs.on('playing', () => {
     loading = false;
@@ -72,7 +73,6 @@ vjs.on('waiting', (event) => {
         }
     });
 });
-
 
 player.on('keydown', (event) => {
     if (event.keyCode === 67) {
@@ -168,33 +168,66 @@ const updateCompressor = (event) => {
     compressed = !compressed;
 }
 
-compBtnDom.onclick = updateCompressor;
+const showSongs = () => {
+    clearCurrentSong();
+    $("#draggable .overlay").css({ visibility: "inherit" });
+    $("#draggable .hideable").css({ visibility: "hidden" });
 
-recognizeSongBtnDom.onclick = async () => {
+    updateSongHistory(songHistory);
+
+    const rect = recognizeSongBtnDom.getBoundingClientRect();
+    draggable.css({
+        visibility: "visible",
+        left: rect.right - draggable.width(),
+        top: rect.top - draggable.height()
+    });
+}
+
+function clearCurrentSong() {
+    draggable.find("#artist-name").text("");
+    draggable.find("#song-title").text("");
+    draggable.find("#album-cover").css({ background: "" });
+}
+
+async function beginRecognize() {
     if (recognizeSongBtn.hasClass("searching")) {
         return;
     }
+
     recognizeSongBtn.addClass("searching");
-    const song = await recognizeSong();
-    if (song?.result) {
-        const rect = recognizeSongBtnDom.getBoundingClientRect();
-        draggable.find("#artist-name").text(song.result.artist);
-        draggable.find("#song-title").text(song.result.title);
-        if (song.result.spotify) {
+
+    const response = await recognizeSong();
+
+    if (response?.current) {
+        const current = response.current;
+        draggable.find("#artist-name").text(current.artist);
+        draggable.find("#song-title").text(current.title);
+        if (current.spotify) {
             draggable.find("#album-cover").css({
-                background: `url(${song.result.spotify.album.images.find(x => x.width === 64)?.url})`
+                background: `url(${current.spotify.album.images.find(x => x.width === 64)?.url})`
             });
             openSpotifyBtn.css({ display: "visible" });
-            openSpotifyBtn.attr("href", song.result.spotify.uri);
+            openSpotifyBtn.attr("href", current.spotify.uri);
         } else {
             openSpotifyBtn.css({ display: "none" });
         }
+        $("#draggable .overlay").css({ visibility: "hidden" });
+        $("#draggable .hideable").css({ visibility: "inherit" });
+    }
+
+    if (response?.history) {
+        songHistory = response.history;
+        updateSongHistory(songHistory);
+    }
+
+    if (isElementOutOfBounds(draggable)) {
+        const rect = recognizeSongBtnDom.getBoundingClientRect();
         draggable.css({
-            visibility: "visible",
             left: rect.right - draggable.width(),
             top: rect.top - draggable.height()
         });
     }
+
     recognizeSongBtn.removeClass("searching");
 };
 
@@ -206,6 +239,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     const _player = videojs('vjs-player');
 
     setupSidebar();
+
+    window.electronAPI.getSongHistory().then((songs) => {
+        if (songs?.history) {
+            songHistory = songs.history;
+        }
+    })
 
     setInterval(() => {
         $("#sidebar").css("min-width", $("#sidebar").width());
@@ -276,10 +315,23 @@ nameInput.on('keypress', async (event) => {
 });
 
 $(window).on('keydown', (evt) => {
+    // c
     if (evt.keyCode === 67) {
         player.focus();
         player.trigger(evt);
     }
+
+    // r
+    if (evt.keyCode === 82) {
+        showSongs();
+    }
+
+    // esc
+    if (evt.keyCode === 27 && isVisible(draggable)) {
+        draggable.css({ visibility: "hidden" });
+    }
+
+    // space f m
     if ([32, 70, 77].includes(evt.keyCode)) {
         player.focus();
         vjs.handleHotkeys(evt);
@@ -510,3 +562,27 @@ function onChatSCroll() {
 function scrollChatToBottom() {
     chatBox.scrollTop(0);
 }
+
+function isElementOutOfBounds(element) {
+    const rect = element[0].getBoundingClientRect();
+    const bodyRect = document.body.getBoundingClientRect();
+    if (rect.bottom > bodyRect.bottom) {
+        return true;
+    }
+    return false;
+}
+
+function updateSongHistory(history) {
+    $("#song-history > .list").empty();
+    for (let song of history) {
+        $("#song-history > .list").append(`
+                <div class="song">
+                    <div class="song-title">${song.title}</div>
+                    <div class="artist-name">${song.artist}</div>
+                </div>
+            `);
+    }
+}
+
+compBtnDom.onclick = updateCompressor;
+recognizeSongBtnDom.onclick = showSongs;

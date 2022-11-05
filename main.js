@@ -182,6 +182,14 @@ function setupListeners() {
   ipcMain.handle('recognize', async function (event, file) {
     return await recognizeSong(file);
   });
+
+  ipcMain.handle('song-history', function (event) {
+    try {
+      return require(`${__dirname}/m3u8/songs.json`);
+    } catch (e) {
+      return [];
+    }
+  });
 }
 
 async function recognizeSong(p) {
@@ -199,7 +207,23 @@ async function recognizeSong(p) {
       data: data,
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    let ret;
+    const u = `${__dirname}/m3u8/songs.json`;
+    if (!fs.existsSync(u)) {
+      const _default = {
+        current: {},
+        history: []
+      };
+      fs.writeFileSync(u, JSON.stringify(_default));
+    }
+    const f = require(u);
+    if (response?.data?.result) {
+      f.current = response.data.result;
+      f.history.unshift(response.data.result);
+      fs.promises.writeFile(u, JSON.stringify(f));
+      ret = f;
+    }
+    return ret;
   } catch (error) {
     console.log("audd error", error);
   }

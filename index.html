@@ -43,11 +43,20 @@
     </div>
 
     <div id="draggable">
-      <div id="album-cover"></div>
-      <div class="wrapper">
-        <div id="song-title"></div>
-        <div id="artist-name"></div>
-        <a id="spotify-open-btn" href="">Open in spotify</a>
+      <div id="current-song">
+        <div class="overlay">
+          <button onclick="beginRecognize()">Recognize</button>
+        </div>
+        <div id="album-cover" class="hideable"></div>
+        <div class="wrapper hideable">
+          <div id="song-title"></div>
+          <div id="artist-name"></div>
+          <a id="spotify-open-btn" href="">Open in spotify</a>
+        </div>
+      </div>
+      <div id="song-history">
+        <div class="title">History</div>
+        <div class="list"></div>
       </div>
       <div id="x">x</div>
     </div>
