@@ -108,7 +108,7 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-})
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -128,16 +128,18 @@ function setupListeners() {
     twitch.chatClient = new ChatClient({ authProvider: twitch.authProvider, channels: [name] });
     channelListener = twitch.chatClient.onMessage(async (channel, user, text, msg) => {
       setTimeout(() => {
-        mainWindow.webContents.send('chat-msg', {
-          user: msg.userInfo.displayName,
-          text,
-          color: msg.userInfo.color,
-          isBroadcaster: msg.userInfo.isBroadcaster,
-          isModerator: msg.userInfo.isMod,
-          badges: msg.userInfo.badges,
-          emotes: msg.emoteOffsets,
-          parsed: msg.parseEmotes()
-        });
+        if (!mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('chat-msg', {
+            user: msg.userInfo.displayName,
+            text,
+            color: msg.userInfo.color,
+            isBroadcaster: msg.userInfo.isBroadcaster,
+            isModerator: msg.userInfo.isMod,
+            badges: msg.userInfo.badges,
+            emotes: msg.emoteOffsets,
+            parsed: msg.parseEmotes()
+          });
+        }
       }, 2000);
     });
 
