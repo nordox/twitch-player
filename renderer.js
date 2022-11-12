@@ -376,6 +376,8 @@ async function playStream() {
         player.focus();
         clearChatBox();
 
+        window.electronAPI.joinChat(name.toLowerCase());
+
         // get bttv & ffz emotes
         const channelInfo = await window.electronAPI.getChannelInfo(name);
 

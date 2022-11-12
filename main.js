@@ -119,6 +119,10 @@ app.on('window-all-closed', function () {
 
 function setupListeners() {
   ipcMain.handle('channel-setup', function (event, name) {
+    return m3u8.getStream(name);
+  });
+
+  ipcMain.handle('join-chat', function (event, name) {
     disConnectFromExistingChat();
 
     twitch.chatClient = new ChatClient({ authProvider: twitch.authProvider, channels: [name] });
@@ -139,8 +143,6 @@ function setupListeners() {
 
     channelListener.channel = name;
     twitch.chatClient.connect();
-
-    return m3u8.getStream(name);
   });
 
   ipcMain.handle('channels', async function (event, name) {
