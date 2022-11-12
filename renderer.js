@@ -195,6 +195,7 @@ async function beginRecognize() {
     }
 
     recognizeSongBtn.addClass("searching");
+    $(".overlay button").addClass("searching");
 
     const response = await recognizeSong();
 
@@ -229,6 +230,7 @@ async function beginRecognize() {
     }
 
     recognizeSongBtn.removeClass("searching");
+    $(".overlay button").removeClass("searching");
 };
 
 $("#x").on('click', () => {
@@ -308,6 +310,7 @@ nameInput.on('keydown', (event) => {
 });
 
 nameInput.on('keypress', async (event) => {
+    // Enter
     if (event.keyCode === 13) {
         manualPlay = true;
         playStream();

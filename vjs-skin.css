@@ -93,12 +93,12 @@
   background-position: center;
 }
 
-.vjs-control.vjs-button.vjs-rsb.searching {
+.vjs-control.vjs-button.vjs-rsb.searching, .overlay button.searching {
   background: none;
   cursor: not-allowed;
   animation: spin 2s linear infinite;
 }
-.vjs-control.vjs-button.vjs-rsb.searching::after {
+.vjs-control.vjs-button.vjs-rsb.searching::after, .overlay button.searching {
   content: "";
   display: block;
   width: 100%;
@@ -108,6 +108,11 @@
   border-top: none;
   border-bottom: none;
   border-radius: 50%;
+}
+
+div.overlay button.searching {
+  width: auto;
+  height: auto;
 }
 
 @keyframes spin {
