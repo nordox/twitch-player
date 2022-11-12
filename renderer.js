@@ -254,6 +254,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         setupSidebar().then(() => {
             $("#sidebar").css("min-width", '');
         });
+        if (currentChannel) {
+            window.electronAPI.getChannelInfo(currentChannel?.user_name).then((channel) => {
+                // Check in case switching channels
+                if (channel.user_id === currentChannel?.user_id) {
+                    updateOverlay(channel);
+                }
+            });
+        }
     }, 60000) // Refresh followed channels every 1 minute
 
     // Toggle mute/unmute on middle mouse click
@@ -384,7 +392,7 @@ async function playStream() {
         console.log("channel info", channelInfo);
         currentChannel = channelInfo;
         $(".channel-name").text(channelInfo.user_name);
-        overlay.html(`${channelInfo.title}<br/>🔴 ${formatter.format(channelInfo.viewer_count)}`);
+        updateOverlay(currentChannel);
 
         const bttvChannelUrl = "https://api.betterttv.net/3/cached/users/twitch/";
         const bttvGlobalUrl = "https://api.betterttv.net/3/cached/emotes/global";
@@ -424,6 +432,10 @@ async function playStream() {
     } catch (e) {
         console.error("error getting stream", e);
     }
+}
+
+function updateOverlay(channelInfo) {
+    overlay.html(`${channelInfo.title}<br/>🔴 ${formatter.format(channelInfo.viewer_count)}`);
 }
 
 async function setupSidebar() {
